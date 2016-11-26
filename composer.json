@@ -1,14 +1,27 @@
 {
-    "name": "borys/chekushka",
-    "require-dev": {
-        "phpunit/phpunit": "5.6.*"
-    },
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Borys Vengerov",
-            "email": "borys.vengerov@gmail.com"
-        }
-    ],
-    "require": {}
+	"name": "bvengerov/chekushka",
+	"require": {
+		"php": "^5.6 || ^7.0",
+		"symfony/console": "~2.5|~3.0"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "~4.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"DepGen\\": "src/DepGen/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tests\\": "tests/"
+		}
+	},
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Borys Vengerov",
+			"email": "borys.vengerov@gmail.com"
+		}
+	]
 }
