@@ -10,7 +10,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Symfony\Component\Console\Application;
 use DepGen\Command\GenerateCommand;
 
-$application = new Application();
+$application = new Application('DepGen');
 
 $application->add(new GenerateCommand());
 
