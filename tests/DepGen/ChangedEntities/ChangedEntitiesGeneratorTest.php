@@ -1,7 +1,7 @@
 <?php
 /**
  * @author BVengerov
- * @description Creates ChangedEntity objects from provided data
+ * @description Tests on ChangedEntitiesGenerator
  */
 
 namespace Test\DepGen\ChangedEntities;
