@@ -4,7 +4,7 @@
  * @description Tests on ChangedEntitiesGenerator
  */
 
-namespace Test\DepGen\ChangedEntities;
+namespace Tests\DepGen\ChangedEntities;
 
 use DepGen\ChangedEntities\ChangedEntitiesGenerator;
 

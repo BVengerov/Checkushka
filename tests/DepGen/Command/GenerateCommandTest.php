@@ -4,7 +4,7 @@
  * @description Tests on GenerateCommand class
  */
 
-namespace Test\DepGen\Command;
+namespace Tests\DepGen\Command;
 
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Console\Application;

@@ -4,7 +4,7 @@
  * @description Tests on GraphBuilder
  */
 
-namespace Test\DepGen\GraphBuilder;
+namespace Tests\DepGen\GraphBuilder;
 
 use DepGen\GraphBuilder\GraphBuilder;
 
