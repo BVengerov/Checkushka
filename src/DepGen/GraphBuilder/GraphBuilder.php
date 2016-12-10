@@ -19,10 +19,18 @@ class GraphBuilder
 
 	public function buildNamespaceGraph($dir)
 	{
-		//Collecting abstract data types (classes and traits) as a namespace tree
-		foreach ($this->getPhpFilesInDir($dir) as $file)
+		//Collecting abstract data types (classes and traits)
+		$adts = [];
+		foreach ($this->getPhpFilesInDir($dir) as $fileName)
 		{
-			$this->_addAdtToGraph($file);
+			$adt = new Adt($fileName);
+			if (!is_null($adt->isAdt()))
+				$adts[] = $adt;
+		}
+
+		foreach ($adts as $adt)
+		{
+			$this->_addAdtToGraph($adt);
 		}
 
 		return $this->_graph;
@@ -42,20 +50,11 @@ class GraphBuilder
 		return $files;
 	}
 
-	private function _addAdtToGraph($fileName)
+	private function _addAdtToGraph(Adt $adt)
 	{
-		$lines = file($fileName);
-
-		$namespace = $this->_getNamespaceFromFileLines($lines);
-		if (!$namespace)
-			return;
-
-		$adtName = $this->_getAdtNameFromFileLines($lines);
-		if (!$adtName)
-			return;
-
 		$currentNode = &$this->_graph;
-		foreach (explode("\\", $namespace) as $namespacePart)
+
+		foreach ($adt->getNamespace() as $namespacePart)
 		{
 			if ($namespacePart === '')
 				continue;
@@ -65,26 +64,6 @@ class GraphBuilder
 
 			$currentNode = &$currentNode[$namespacePart];
 		}
-
-		$currentNode[] = $adtName;
-	}
-
-	private function _getNamespaceFromFileLines($fileLines)
-	{
-		$namespaceGrep = preg_grep('/^namespace /', $fileLines);
-		$namespaceLine = array_shift($namespaceGrep);
-		preg_match('/^namespace (.*);$/', $namespaceLine, $match);
-		$namespace = array_pop($match);
-		return $namespace;
-	}
-
-	private function _getAdtNameFromFileLines($fileLines)
-	{
-		//TODO add trait support
-		$adtGrep = preg_grep('/^class /', $fileLines);
-		$adtLine = array_shift($adtGrep);
-		preg_match('/class\s+([^\s{]+)/', $adtLine, $match);
-		$adtName = array_pop($match);
-		return $adtName;
+		$currentNode[] = $adt;
 	}
 }

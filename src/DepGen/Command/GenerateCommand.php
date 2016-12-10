@@ -25,7 +25,7 @@ class GenerateCommand extends Command
 				'This commands outputs entities dependent on the provided input.'
 			);
 		$this->addOption(
-			'file',
+			self::OPT_FILE,
 			'f',
 			InputOption::VALUE_REQUIRED,
 			'File with input in JSON for which to generate dependencies',

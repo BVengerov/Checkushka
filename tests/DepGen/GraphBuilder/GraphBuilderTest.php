@@ -7,6 +7,7 @@
 namespace Tests\DepGen\GraphBuilder;
 
 use DepGen\GraphBuilder\GraphBuilder;
+use DepGen\GraphBuilder\Adt;
 
 class GraphBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -41,10 +42,22 @@ class GraphBuilderTest extends \PHPUnit_Framework_TestCase
 				);
 		}
 
-		$this->assertContains(
-			$className,
-			$currentNode,
-			'The expected class name is not present in the built namespace graph.'
+		$classesFoundByExactName = 0;
+		foreach ($currentNode as $i => $element)
+		{
+			$this->assertTrue(
+				$element instanceOf Adt,
+				"Element $i is not an instance of Adt class: " . var_export($element, true)
+			);
+
+			if ($element->getName() === $className)
+				$classesFoundByExactName++;
+		}
+
+		$this->assertEquals(
+			1,
+			$classesFoundByExactName,
+			"There is not exactly one class with name {$className}: " . var_export($result, true)
 		);
 	}
 }
