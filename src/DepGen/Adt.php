@@ -4,7 +4,7 @@
  * @description Abstract data type (node) in the project graph
  */
 
-namespace DepGen\GraphBuilder;
+namespace DepGen;
 
 use PhpParser\ParserFactory;
 
@@ -13,7 +13,8 @@ class Adt
 	private $_fileName;
 	private $_namespaceParts;
 	private $_name;
-	private $_parentFqcnParts;
+	private $_fqan;
+	private $_parentFqan;
 
 	public function __construct($fileName)
 	{
@@ -25,7 +26,8 @@ class Adt
 
 		$this->_namespaceParts = $this->_getNamespaceFromStatements($stmts);
 		$this->_name = $this->_getNameFromStatements($stmts);
-		$this->_parentFqcnParts = $this->_getParentFromStatements($stmts);
+		$this->_fqan = implode('\\', $this->_namespaceParts) . '\\' . $this->_name;
+		$this->_parentFqan = $this->_getParentFqanFromStatements($stmts);
 	}
 
 	public function getFileName()
@@ -43,9 +45,19 @@ class Adt
 		return $this->_name;
 	}
 
+	public function getFqan()
+	{
+		return $this->_fqan;
+	}
+
 	public function isAdt()
 	{
 		return !is_null($this->_name) && !is_null($this->_namespaceParts);
+	}
+
+	public function getParentFqan()
+	{
+		return $this->_parentFqan;
 	}
 
 	private function _getNamespaceFromStatements($stmts)
@@ -60,7 +72,7 @@ class Adt
 		return $classStmts->name;
 	}
 
-	private function _getParentFromStatements($stmts)
+	private function _getParentFqanFromStatements($stmts)
 	{
 		$statements = $stmts[0]->stmts;
 		$classStmts = array_pop($statements);
@@ -78,28 +90,28 @@ class Adt
 
 		$firstExtendsPart = $extendsParts[0];
 
-		// If the first "extends" statement part is in the "use" statements aliases, then we build fqcn with the namespace parts
+		// If the first "extends" statement part is in the "use" statements aliases, then we build Fqan with the namespace parts
 		if (array_key_exists($firstExtendsPart, $usedAliases))
 		{
-			$parentFqcnParts = $usedAliases[$firstExtendsPart];
-			array_pop($parentFqcnParts);
+			$parentFqanParts = $usedAliases[$firstExtendsPart];
+			array_pop($parentFqanParts);
 		}
 		// If the first part is absent in "use" statements, but a file with corresponding name exists, then it is in the same namespace
 		elseif ($this->_isNameInDir($firstExtendsPart, dirname($this->getFileName())))
 		{
-			$parentFqcnParts = $this->getNamespace();
+			$parentFqanParts = $this->getNamespace();
 		}
 		// Else the name is in the global namespace
 		else
 		{
-			$parentFqcnParts = ['\\'];
+			$parentFqanParts = ['\\'];
 		}
 
-		return array_merge($parentFqcnParts, $extendsParts);
+		return implode('\\', array_merge($parentFqanParts, $extendsParts));
 	}
 
 	private function _isNameInDir($name, $path)
 	{
-		return count(glob("{$path}*{$name}*")) > 0;
+		return count(glob("{$path}/*{$name}*")) > 0;
 	}
 }

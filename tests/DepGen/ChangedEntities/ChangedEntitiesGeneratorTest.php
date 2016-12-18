@@ -6,34 +6,29 @@
 
 namespace Tests\DepGen\ChangedEntities;
 
+use Tests\BaseTest;
 use DepGen\ChangedEntities\ChangedEntitiesGenerator;
 
-class ChangedEntitiesGeneratorTest extends \PHPUnit_Framework_TestCase
+class ChangedEntitiesGeneratorTest extends BaseTest
 {
 	public function testGenerateFromJson()
 	{
 		$jsonString =
 				'[{
-					"name": "SomeClass",
-					"fileName": "/some/file/name.php",
+					"fileName": "' . self::TEST_PROJECT_DIR . '/Inheritance/FolderWithBaseClass/UnrelatedClassInSameNamespace.php",
 					"entityType": "class",
 					"changeType": "edited"
 				},
 				{
-					"name": "SomeOtherClass",
-					"fileName": "/some/other/file/name.php",
+					"fileName": "' . self::TEST_PROJECT_DIR . '/Inheritance/SomeOtherFolder/UnrelatedClassInOtherNamespace.php",
 					"entityType": "class",
 					"changeType": "edited"
 				}]';
 		$result = ChangedEntitiesGenerator::generateFromJson($jsonString);
+
 		$changedEntity0 = $result[0];
 		$this->assertEquals(
-			'SomeClass',
-			$changedEntity0->getName(),
-			'Entity with index 0 was generated with incorrect name'
-		);
-		$this->assertEquals(
-			'/some/file/name.php',
+			self::TEST_PROJECT_DIR . '/Inheritance/FolderWithBaseClass/UnrelatedClassInSameNamespace.php',
 			$changedEntity0->getFileName(),
 			'Entity with index 0 was generated with incorrect file name'
 		);
@@ -47,14 +42,10 @@ class ChangedEntitiesGeneratorTest extends \PHPUnit_Framework_TestCase
 			$changedEntity0->getChangeType(),
 			'Entity with index 0 was generated with incorrect change type'
 		);
+
 		$changedEntity1 = $result[1];
 		$this->assertEquals(
-			'SomeOtherClass',
-			$changedEntity1->getName(),
-			'Entity with index 1 was generated with incorrect name'
-		);
-		$this->assertEquals(
-			'/some/other/file/name.php',
+			self::TEST_PROJECT_DIR . '/Inheritance/SomeOtherFolder/UnrelatedClassInOtherNamespace.php',
 			$changedEntity1->getFileName(),
 			'Entity with index 1 was generated with incorrect file name'
 		);

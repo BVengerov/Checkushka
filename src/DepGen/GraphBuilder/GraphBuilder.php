@@ -2,26 +2,22 @@
 /**
  * @author BVengerov
  * @description Generates graph tree by namespaces according to PSR-4
- * !Doesn't support traits for now
+ * TODO add traits support
  */
 
 namespace DepGen\GraphBuilder;
 
+use DepGen\Adt;
+
 class GraphBuilder
 {
-	/** @var array */
-	private $_graph;
-
-	public function __construct()
+	public static function buildNamespaceGraph($dir)
 	{
-		$this->_graph = [];
-	}
+		$graph = [];
 
-	public function buildNamespaceGraph($dir)
-	{
 		//Collecting abstract data types (classes and traits)
 		$adts = [];
-		foreach ($this->getPhpFilesInDir($dir) as $fileName)
+		foreach (self::getPhpFilesInDir($dir) as $fileName)
 		{
 			$adt = new Adt($fileName);
 			if (!is_null($adt->isAdt()))
@@ -30,13 +26,13 @@ class GraphBuilder
 
 		foreach ($adts as $adt)
 		{
-			$this->_addAdtToGraph($adt);
+			self::_addAdtToGraph($adt, $graph);
 		}
 
-		return $this->_graph;
+		return $graph;
 	}
 
-	public function getPhpFilesInDir($dir)
+	public static function getPhpFilesInDir($dir)
 	{
 		$directory = new \RecursiveDirectoryIterator($dir);
 		$iterator = new \RecursiveIteratorIterator($directory);
@@ -50,9 +46,9 @@ class GraphBuilder
 		return $files;
 	}
 
-	private function _addAdtToGraph(Adt $adt)
+	private static function _addAdtToGraph(Adt $adt, &$graph)
 	{
-		$currentNode = &$this->_graph;
+		$currentNode = &$graph;
 
 		foreach ($adt->getNamespace() as $namespacePart)
 		{

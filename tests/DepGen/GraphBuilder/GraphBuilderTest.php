@@ -6,15 +6,15 @@
 
 namespace Tests\DepGen\GraphBuilder;
 
+use Tests\BaseTest;
 use DepGen\GraphBuilder\GraphBuilder;
-use DepGen\GraphBuilder\Adt;
+use DepGen\Adt;
 
-class GraphBuilderTest extends \PHPUnit_Framework_TestCase
+class GraphBuilderTest extends BaseTest
 {
 	public function testGetPhpFilesInDir()
 	{
-		$sut = new GraphBuilder();
-		$result = $sut->getPhpFilesInDir(__DIR__);
+		$result = GraphBuilder::getPhpFilesInDir(__DIR__);
 
 		$this->assertContains(
 			__FILE__,
@@ -25,8 +25,7 @@ class GraphBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testBuildNamespaceGraph()
 	{
-		$sut = new GraphBuilder();
-		$result = $sut->buildNamespaceGraph(__DIR__);
+		$result = GraphBuilder::buildNamespaceGraph(__DIR__);
 
 		$fqcnParts = explode("\\", __CLASS__);
 		$className = array_pop($fqcnParts);
