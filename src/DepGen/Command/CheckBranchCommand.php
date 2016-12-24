@@ -26,6 +26,7 @@ class CheckBranchCommand extends Command
 			->setHelp('Generates dependecies for all changes made in the current git branch.')
 			->addUsage(self::NAME . ' /path/to/project')
 			->addUsage(self::NAME . ' \"$PWD\"');
+
 		$this->addArgument(
 			self::ARG_PROJECT_DIR,
 			InputArgument::OPTIONAL,

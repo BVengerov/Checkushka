@@ -24,10 +24,24 @@ class Adt
 		$parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
 		$stmts = $parser->parse($code);
 
-		$this->_namespaceParts = $this->_getNamespaceFromStatements($stmts);
 		$this->_name = $this->_getNameFromStatements($stmts);
-		$this->_fqan = implode('\\', $this->_namespaceParts) . '\\' . $this->_name;
-		$this->_parentFqan = $this->_getParentFqanFromStatements($stmts);
+
+		if ($this->_hasNamespace($stmts))
+		{
+			$this->_namespaceParts = $this->_getNamespaceFromStatements($stmts);
+			$this->_fqan = !is_null($this->_name)
+				? implode('\\', $this->_namespaceParts) . '\\' . $this->_name
+				: null;
+		}
+		else
+		{
+			$this->_namespaceParts = null;
+			$this->_fqan = null;
+		}
+
+		$this->_parentFqan = $this->isAdt()
+			? $this->_getParentFqanFromStatements($stmts)
+			: null;
 	}
 
 	public function getFileName()
@@ -60,13 +74,20 @@ class Adt
 		return $this->_parentFqan;
 	}
 
+	private function _hasNamespace($stmts)
+	{
+		return isset($stmts[0]->name->parts);
+	}
+
 	private function _getNamespaceFromStatements($stmts)
 	{
-		return $stmts[0]->name->parts;
+		return array_merge([''], $stmts[0]->name->parts);
 	}
 
 	private function _getNameFromStatements($stmts)
 	{
+		if (!isset($stmts[0]->stmts))
+			return null;
 		$statements = $stmts[0]->stmts;
 		$classStmts = $statements[count($statements) - 1];
 		return $classStmts->name;
@@ -77,7 +98,7 @@ class Adt
 		$statements = $stmts[0]->stmts;
 		$classStmts = array_pop($statements);
 
-		if (!isset($classStmts->extends))
+		if (!isset($classStmts->extends->parts))
 			return null;
 
 		$extendsParts = $classStmts->extends->parts;
@@ -90,10 +111,11 @@ class Adt
 
 		$firstExtendsPart = $extendsParts[0];
 
+		$parentFqanParts = [''];
 		// If the first "extends" statement part is in the "use" statements aliases, then we build Fqan with the namespace parts
 		if (array_key_exists($firstExtendsPart, $usedAliases))
 		{
-			$parentFqanParts = $usedAliases[$firstExtendsPart];
+			$parentFqanParts = array_merge($parentFqanParts, $usedAliases[$firstExtendsPart]);
 			array_pop($parentFqanParts);
 		}
 		// If the first part is absent in "use" statements, but a file with corresponding name exists, then it is in the same namespace
@@ -102,10 +124,6 @@ class Adt
 			$parentFqanParts = $this->getNamespace();
 		}
 		// Else the name is in the global namespace
-		else
-		{
-			$parentFqanParts = ['\\'];
-		}
 
 		return implode('\\', array_merge($parentFqanParts, $extendsParts));
 	}

@@ -31,17 +31,17 @@ class AdtTest extends BaseTest
             'Name of the created Adt object differs from expected.'
         );
         $this->assertEquals(
-            self::class,
+            '\\' . self::class,
             $adt->getFqan(),
             'Name of the created Adt object differs from expected.'
         );
         $this->assertEquals(
-            explode('\\', __NAMESPACE__),
+            array_merge([''], explode('\\', __NAMESPACE__)),
             $adt->getNamespace(),
             'Namespace of the created Adt object differs from expected.'
         );
         $this->assertEquals(
-            'Tests\BaseTest',
+            '\Tests\BaseTest',
             $adt->getParentFqan(),
             'Parent fully qualified adt name of the created Adt object differs from expected.'
         );
@@ -50,6 +50,12 @@ class AdtTest extends BaseTest
     public function testParentFqanForClassInSameNamespace()
     {
         $adt = new Adt(self::TEST_PROJECT_DIR . '/Inheritance/FolderWithBaseClass/ChildInSameNamespace.php');
-        $this->assertEquals('Koshki\\Inheritance\\FolderWithBaseClass\\BaseClass', $adt->getParentFqan());
+        $this->assertEquals('\Koshki\\Inheritance\\FolderWithBaseClass\\BaseClass', $adt->getParentFqan());
+    }
+
+    public function testParentFqanWhenFqanInExtends()
+    {
+        $adt = new Adt(self::TEST_PROJECT_DIR . '/Adt/ParentIsSpecifiedWithFqan.php');
+        $this->assertEquals('\Koshki\\Adt\\FolderWithParent\\ParentClass', $adt->getParentFqan());
     }
 }

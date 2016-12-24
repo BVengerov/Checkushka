@@ -20,7 +20,7 @@ class GraphBuilder
 		foreach (self::getPhpFilesInDir($dir) as $fileName)
 		{
 			$adt = new Adt($fileName);
-			if (!is_null($adt->isAdt()))
+			if ($adt->isAdt())
 				$adts[] = $adt;
 		}
 
